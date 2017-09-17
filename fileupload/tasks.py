@@ -9,7 +9,7 @@ from celery.task import periodic_task
 from django.conf import settings
 
 
-@periodic_task(run_every=(crontab(hour=0, minute=10)), name='room_members')
+@periodic_task(run_every=(crontab(hour=0, minute=20)), name='room_members')
 def get_room_members():
     media = settings.MEDIA_ROOT
     delete_file_floder(media)

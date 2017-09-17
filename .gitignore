@@ -1,3 +1,4 @@
 DjangoUpload/settings.py
 *.pyc
 .idea/*
+media/
