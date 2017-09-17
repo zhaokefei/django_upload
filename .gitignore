@@ -1,0 +1,3 @@
+DjangoUpload/settings.py
+*.pyc
+.idea/*
