@@ -4,3 +4,4 @@ DjangoUpload/settings.py
 media/
 celerybeat-schedule*
 celerybeat.pid
+db.sqlite3
