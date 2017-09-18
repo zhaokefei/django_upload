@@ -2,3 +2,5 @@ DjangoUpload/settings.py
 *.pyc
 .idea/*
 media/
+celerybeat-schedule*
+celerybeat.pid

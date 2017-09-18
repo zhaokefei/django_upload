@@ -13,3 +13,9 @@ class UploadFile(models.Model):
         db_table = 'uploadfile'
 
 
+class RobotID(models.Model):
+    robotid = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'robotid'
+

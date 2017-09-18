@@ -19,30 +19,76 @@ from fileupload.forms import UploadFileForm
 from fileupload.models import UploadFile
 
 
+# def index(request):
+#     media = settings.MEDIA_ROOT
+#     files = os.listdir(media)
+#     if not files:
+#         return HttpResponse('please contact administor!')
+#     file = files[0]
+#     path = os.path.join(media, file)
+#     if os.path.isfile(path):
+#         wb = xlrd.open_workbook(path)
+#         table = wb.sheets()[0]
+#         room_nums = table.nrows
+#         member_nums = int(sum(table.col_values(2)[1:]))
+#         create_time = file.split('.')[0]
+#
+#         return render(request, "home.html",
+#                       {
+#                           'file_path': path,
+#                           'file_name': file,
+#                           'room_nums': room_nums,
+#                           'member_nums': member_nums,
+#                           'create_time': create_time
+#                       })
+#     return HttpResponse('please contact administor!')
+
 def index(request):
     media = settings.MEDIA_ROOT
     files = os.listdir(media)
     if not files:
         return HttpResponse('please contact administor!')
-    file = files[0]
-    path = os.path.join(media, file)
-    if os.path.isfile(path):
-        wb = xlrd.open_workbook(path)
-        table = wb.sheets()[0]
-        room_nums = table.nrows
-        member_nums = int(sum(table.col_values(2)[1:]))
-        create_time = file.split('.')[0]
 
-        return render(request, "home.html",
-                      {
-                          'file_path': path,
-                          'file_name': file,
-                          'room_nums': room_nums,
-                          'member_nums': member_nums,
-                          'create_time': create_time
-                      })
-    return HttpResponse('please contact administor!')
+    excel_dict = {}
+    for i, file in enumerate(files):
+        path = os.path.join(media, file)
+        if os.path.isfile(path):
+            wb = xlrd.open_workbook(path)
+            table = wb.sheets()[0]
+            room_nums = table.nrows
+            member_nums = int(sum(table.col_values(2)[1:]))
+            time_type = (file.split('.')[0]).split('_')
+            create_time = time_type[0]
+            type = time_type[-1]
 
+            excel_dict[i] = {'path': path, 'file': file,
+                             'room_nums': room_nums, 'member_nums': member_nums,
+                             'create_time': create_time, 'type': type}
+
+    return render(request, 'home.html',
+                  {
+                      'excel_dict': excel_dict
+                  })
+
+
+    # file = files[0]
+    # path = os.path.join(media, file)
+    # if os.path.isfile(path):
+    #     wb = xlrd.open_workbook(path)
+    #     table = wb.sheets()[0]
+    #     room_nums = table.nrows
+    #     member_nums = int(sum(table.col_values(2)[1:]))
+    #     create_time = file.split('.')[0]
+    #
+    #     return render(request, "home.html",
+    #                   {
+    #                       'file_path': path,
+    #                       'file_name': file,
+    #                       'room_nums': room_nums,
+    #                       'member_nums': member_nums,
+    #                       'create_time': create_time
+    #                   })
+    # return HttpResponse('please contact administor!')
 
 def handle_uploaded_file(f, path):
     #从路径中提取出 文件名 和 文件所在文件夹路径

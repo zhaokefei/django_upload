@@ -6,9 +6,16 @@
 </head>
 <body>
 
-<p>所有群下载: <button style="background-color: antiquewhite;"><a href="{% url 'download' file_path %}">{{ file_name }}</a></button></p>
-<p>总群数：{{ room_nums }} 个</p>
-<p>总人数：{{ member_nums }} 人</p>
-<p>查询时间：{{ create_time }}</p>
+{#<p>所有群下载: <button style="background-color: antiquewhite;"><a href="{% url 'download' file_path %}">{{ file_name }}</a></button></p>#}
+{#<p>总群数：{{ room_nums }} 个</p>#}
+{#<p>总人数：{{ member_nums }} 人</p>#}
+{#<p>查询时间：{{ create_time }}</p>#}
+{% for excel in excel_dict.values %}
+<p>{% if excel.type == 'allmembers' %}所有群下载{% else %}代理群下载{% endif %}: <button style="background-color: antiquewhite;"><a href="{% url 'download' excel.path %}">{{ excel.file }}</a></button></p>
+<p>总群数：{{ excel.room_nums }} 个</p>
+<p>总人数：{{ excel.member_nums }} 人</p>
+<p>查询时间：{{ excel.create_time }}</p>
+
+{% endfor %}
 </body>
 </html>
