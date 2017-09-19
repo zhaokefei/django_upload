@@ -17,8 +17,7 @@ from fileupload.models import RobotID
 logger = get_task_logger(__name__)
 
 
-# @periodic_task(run_every=(crontab(hour=10, minute=20)), name='room_members')
-@periodic_task(run_every=(crontab(minute='*/5')), name='room_members')
+@periodic_task(run_every=(crontab(hour=0, minute=10)), name='room_members')
 def get_room_members():
     logger.info('enter get_room_members method')
     media = settings.MEDIA_ROOT
@@ -48,7 +47,7 @@ def get_room_members():
     logger.info('end get_room_members method')
 
 
-@periodic_task(run_every=(crontab(minute='*/4')), name='proxy_members')
+@periodic_task(run_every=(crontab(hour=0, minute=20)), name='proxy_members')
 def get_proxy_members():
     logger.info('enter get_proxy_members method')
     media = settings.MEDIA_ROOT
