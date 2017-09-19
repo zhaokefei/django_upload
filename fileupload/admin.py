@@ -13,8 +13,8 @@ class UploadFileAdmin(admin.ModelAdmin):
 
 
 class RobotIDAdmin(admin.ModelAdmin):
-    list_display = ('robotid',)
-    search_fields = ('robotid',)
+    list_display = ('robotid', 'type')
+    search_fields = ('robotid', 'type')
 
 
 admin.site.register(RobotID, RobotIDAdmin)

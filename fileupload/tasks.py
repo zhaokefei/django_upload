@@ -1,5 +1,7 @@
 # /usr/bin/env python
 # -*- coding:utf-8 -*-
+from __future__ import unicode_literals
+
 import os
 import pandas as pd
 from datetime import datetime
@@ -15,7 +17,8 @@ from fileupload.models import RobotID
 logger = get_task_logger(__name__)
 
 
-@periodic_task(run_every=(crontab(hour=10, minute=10)), name='room_members')
+# @periodic_task(run_every=(crontab(hour=10, minute=20)), name='room_members')
+@periodic_task(run_every=(crontab(minute='*/5')), name='room_members')
 def get_room_members():
     logger.info('enter get_room_members method')
     media = settings.MEDIA_ROOT
@@ -45,13 +48,28 @@ def get_room_members():
     logger.info('end get_room_members method')
 
 
-@periodic_task(run_every=(crontab(hour=10, minute=10)), name='proxy_members')
+@periodic_task(run_every=(crontab(minute='*/4')), name='proxy_members')
 def get_proxy_members():
     logger.info('enter get_proxy_members method')
     media = settings.MEDIA_ROOT
     delete_file_floder(media, type='B')
 
-    robot_lists = (RobotID.objects.all().values_list('robotid', flat=True))
+    path = os.path.join(settings.BASE_DIR, 'media/{}_proxymembers.xlsx'.format(datetime.now().strftime("%Y-%m-%d %H:%M")))
+
+    ew = pd.ExcelWriter(path)
+
+    proxy_types = ["1", "2", "3"]
+    sheet_names = ["代理群1", "代理群2", "代理群3"]
+
+    for type, sheet in zip(proxy_types, sheet_names):
+        generate_proxy_excel(ew, type, sheet)
+
+    ew.save()
+
+
+def generate_proxy_excel(ew, type, sheet):
+
+    robot_lists = (RobotID.objects.filter(type=type).values_list('robotid', flat=True))
     robot_ids = tuple([str(robotid) for robotid in robot_lists])
 
     m = pd.read_sql('''
@@ -73,7 +91,8 @@ def get_proxy_members():
     # a = m.merge(h, how='left', on=['NowRoomName', 'U_RoomID'])
     a = m.merge(h, how='left', on=['U_RoomID'])
 
-    a.to_excel(os.path.join(settings.BASE_DIR, 'media/{}_proxymembers.xlsx'.format(datetime.now().strftime("%Y-%m-%d %H:%M"))), index=False)
+    # a.to_excel(os.path.join(settings.BASE_DIR, 'media/{}_proxymembers.xlsx'.format(datetime.now().strftime("%Y-%m-%d %H:%M"))), index=False)
+    a.to_excel(ew, sheet_name=sheet, index=False)
 
     logger.info('end get_proxy_members method')
 

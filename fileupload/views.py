@@ -50,20 +50,47 @@ def index(request):
         return HttpResponse('please contact administor!')
 
     excel_dict = {}
+    proxy_room_nums = 0
+    proxy_member_nums = 0
+    room_nums = 0
+    member_nums = 0
     for i, file in enumerate(files):
         path = os.path.join(media, file)
         if os.path.isfile(path):
-            wb = xlrd.open_workbook(path)
-            table = wb.sheets()[0]
-            room_nums = table.nrows
-            member_nums = int(sum(table.col_values(2)[1:]))
             time_type = (file.split('.')[0]).split('_')
             create_time = time_type[0]
             type = time_type[-1]
+            if type == 'proxymembers':
+                wb = xlrd.open_workbook(path)
+                tables = wb.sheets()
+                for table in tables:
+                    proxy_room_nums += (table.nrows - 1)
+                    proxy_member_nums += int(sum(table.col_values(2)[1:]))
 
-            excel_dict[i] = {'path': path, 'file': file,
-                             'room_nums': room_nums, 'member_nums': member_nums,
-                             'create_time': create_time, 'type': type}
+                excel_dict[type] = {'path': path, 'file': file,
+                                    'room_nums': proxy_room_nums,
+                                    'member_nums': proxy_member_nums,
+                                    'create_time': create_time}
+
+            elif type == 'allmembers':
+                wb = xlrd.open_workbook(path)
+                tables = wb.sheets()
+                for table in tables:
+                    room_nums += (table.nrows - 1)
+                    member_nums += int(sum(table.col_values(2)[1:]))
+
+                excel_dict[type] = {'path': path, 'file': file,
+                                    'room_nums': room_nums,
+                                    'member_nums': member_nums,
+                                    'create_time': create_time}
+
+            # time_type = (file.split('.')[0]).split('_')
+            # create_time = time_type[0]
+            # type = time_type[-1]
+
+            # excel_dict[i] = {'path': path, 'file': file,
+            #                  'room_nums': room_nums, 'member_nums': member_nums,
+            #                  'create_time': create_time, 'type': type}
 
     return render(request, 'home.html',
                   {
