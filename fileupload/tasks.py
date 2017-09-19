@@ -6,14 +6,18 @@ from datetime import datetime
 
 from celery.schedules import crontab
 from celery.task import periodic_task
+from celery.utils.log import get_task_logger
 
 from django.conf import settings
 
 from fileupload.models import RobotID
 
+logger = get_task_logger(__name__)
 
-@periodic_task(run_every=(crontab(hour=0, minute=10)), name='room_members')
+
+@periodic_task(run_every=(crontab(hour=10, minute=10)), name='room_members')
 def get_room_members():
+    logger.info('enter get_room_members method')
     media = settings.MEDIA_ROOT
     delete_file_floder(media, type='A')
 
@@ -38,9 +42,12 @@ def get_room_members():
 
     a.to_excel(os.path.join(settings.BASE_DIR, 'media/{}_allmembers.xlsx'.format(datetime.now().strftime("%Y-%m-%d %H:%M"))), index=False)
 
+    logger.info('end get_room_members method')
 
-@periodic_task(run_every=(crontab(hour=0, minute=20)), name='proxy_members')
+
+@periodic_task(run_every=(crontab(hour=10, minute=10)), name='proxy_members')
 def get_proxy_members():
+    logger.info('enter get_proxy_members method')
     media = settings.MEDIA_ROOT
     delete_file_floder(media, type='B')
 
@@ -68,17 +75,23 @@ def get_proxy_members():
 
     a.to_excel(os.path.join(settings.BASE_DIR, 'media/{}_proxymembers.xlsx'.format(datetime.now().strftime("%Y-%m-%d %H:%M"))), index=False)
 
+    logger.info('end get_proxy_members method')
+
 
 def delete_file_floder(media, type):
+    logger.info('enter delete_file_floder method')
     if os.path.isfile(media):
         try:
             file_name = os.path.basename(media).split('.')[0]
             file_type = file_name.split('_')[-1]
             if type == 'A' and file_type == 'allmembers':
+                logger.info('delete allmembers excel file')
                 os.remove(media)
             elif type == 'B' and file_type == 'proxymembers':
+                logger.info('delete proxymembers excel file')
                 os.remove(media)
-        except:
+        except Exception, e:
+            logger.info('raise error %s' % e.message)
             pass
     elif os.path.isdir(media):
         for item in os.listdir(media):
