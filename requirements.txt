@@ -22,7 +22,7 @@ enum34==1.1.6
 et-xmlfile==1.0.1
 flower==0.9.2
 futures==3.1.1
-httpie==0.9.9
+httpie==1.0.3
 idna==2.5
 ipdb==0.10.3
 ipython==5.4.1
